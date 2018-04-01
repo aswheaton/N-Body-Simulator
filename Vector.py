@@ -37,7 +37,9 @@ def class Vector(object):
         return(scalarSum)
 
     def cross(self, other):
+        
         components = []
+        
         for i in range(self.dimension):
             components.append(0)
             for j in range(self.dimension):
