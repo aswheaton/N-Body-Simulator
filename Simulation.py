@@ -15,7 +15,7 @@ from Body import Body
 class Simulation(object):
     
     # Recieves a datafile and generates a list of Body type objects.
-    def __init__(self, filename):
+    def __init__(self, filename, timestep):
                 
         self.system = []
         
@@ -23,13 +23,15 @@ class Simulation(object):
 
         for line in datafile.readlines():
             tokens = line.split(", ")
-            self.system.append(Body(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6])
+            self.system.append(Body(tokens[0], tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6]))
+        
+        self.timestep = timestep
     
     def stepForward(self):
         
         # Updates the position of every body in the system.
-        for i in range(len(self.system)):
-            self.system[i].stepForward()
+        for n in range(len(self.system)):
+            self.system[n].stepForward()
     
     # This block updates and animates the simulation by calling the stepForward() method and using FuncAnimation.    
     
@@ -37,14 +39,21 @@ class Simulation(object):
     def init(self):
         return(self.patches)
     
-    # Updates the position of each patch with the new simulation data.
+    # Updates the position of each patch with the new simulation data by calling Beeman algorithm functions and stepping the simulation forward.
     def animate(self, i):
+        
+        for n in range(len(self.system)):
+            self.system[n].beemanPosition(self.timestep)
+        for n in range(len(self.system)):
+            self.system[n].beemanAcceleration()
+        for n in range(len(self.system)):
+            self.system[n].beemanVelocity(self.timestep)
         
         self.stepForward()
         
-        for i in range(len(self.system))
-            self.patches[i].center = (self.system[i].getPosition())
-        return self.patches
+        for n in range(len(self.system)):
+            self.patches[n].center = self.system[n].pos
+        return(self.patches)
 
     def display(self):
         
@@ -54,13 +63,13 @@ class Simulation(object):
         axes.axis('scaled')
 
         # Creates a list of circles to be plotted by pyplot.
-        patches = []
+        self.patches = []
 
-        for i in range(len(self.system))
-            patches.append(plt.Circle((self.system[i].getPostion(), self.system[i].radius, color = self.system[i].colour, animated = True)))
+        for n in range(len(self.system)):
+            self.patches.append(matplotlib.pyplot.Circle(self.system[n].pos.list(), self.system[n].radius, color = self.system[n].colour, animated = True))
         
-        for i in range(0, len(self.patches)):
-            axes.add_patch(self.patches[i])
+        for n in range(0, len(self.patches)):
+            axes.add_patch(self.patches[n])
         
         # Animates the plot.
         animation = FuncAnimation(figure, self.animate, init_func = self.init, frames = 1, repeat = True, interval = 0.1, blit = True)
