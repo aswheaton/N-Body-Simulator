@@ -13,7 +13,24 @@ class Vector(object):
 
         self.dimension = len(components)
         self.vector = components
-
+        self.index = 0
+    
+    def __getitem(self, index):
+        
+        return(self.vector[index])
+        
+    def __iter__(self):
+        
+        return(self.vector)
+        
+    def __next__(self):
+        
+        if self.index > self.dimension - 1:
+            raise StopIteration
+        
+        self.index = self.index + 1
+        return self.vector[self.index]
+        
     def __add__(self, other):
 
         components = []
@@ -22,7 +39,7 @@ class Vector(object):
             components.append(self.vector[i] + other.vector[i])
         return(Vector(components))
 
-    def __subtract__(self, other):
+    def __sub__(self, other):
 
         components = []
 
@@ -30,7 +47,7 @@ class Vector(object):
             components.append(self.vector[i] - other.vector[i])
         return(Vector(components))
 
-    def __multiply__(self, other):
+    def __mul__(self, other):
 
         components = []
 
@@ -38,17 +55,28 @@ class Vector(object):
             components.append(other * self.vector[i])
         return(Vector(components))
 
-    def norm(self):
+    def __div__(self, other):
+
+        components = []
+
+        for i in range(self.dimension):
+            components.append(self.vector[i] / other)
+        return(Vector(components))
+
+    def mag(self):
         
-        norm = 0
+        norm = 0.0
 
         for i in range(self.dimension):
             norm = norm + self.vector[i]**2
         return(math.sqrt(norm))
 
+    def norm(self):
+        return(self / self.mag())
+
     def dot(self, other):
 
-        scalarSum = 0
+        scalarSum = 0.0
 
         for i in range(self.dimension):
             scalarSum = scalarSum + self.vector[i] * other.vector[i]
@@ -58,24 +86,13 @@ class Vector(object):
         
         components = []
         
+        # Temporary fix for cross product not handling signs properly. For three dimensions only!
         components.append(self.vector[1]*other.vector[2]-self.vector[2]*other.vector[1])
         components.append(-(self.vector[0]*other.vector[2]-self.vector[2]*other.vector[0]))
         components.append(self.vector[0]*other.vector[1]-self.vector[1]*other.vector[0])
         
         return(Vector(components))
         
-        # Code for an n-dimensional cross product. Work in progress. Code above works for three dimensional vectors only.
-        # 
-        # for i in range(self.dimension):
-        #     components.append(0)
-        #     for j in range(self.dimension):
-        #         if j != i:
-        #             for k in range(self.dimension):
-        #                 if k != i:
-        #                     if k > j:
-        #                         components[i] += self.vector[j]*other.vector[k]
-        #                     elif k < j:
-        #                         components[i] -= self.vector[j]*other.vector[k]
-
+    # Returns the components of the vector as a list.
     def list(self):
         return(self.vector)
