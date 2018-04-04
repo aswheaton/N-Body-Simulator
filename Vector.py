@@ -15,21 +15,9 @@ class Vector(object):
         self.vector = components
         self.index = 0
     
-    def __getitem(self, index):
+    def __getitem__(self, key):
         
-        return(self.vector[index])
-        
-    def __iter__(self):
-        
-        return(self.vector)
-        
-    def __next__(self):
-        
-        if self.index > self.dimension - 1:
-            raise StopIteration
-        
-        self.index = self.index + 1
-        return self.vector[self.index]
+        return(self.vector[key])
         
     def __add__(self, other):
 
@@ -65,11 +53,11 @@ class Vector(object):
 
     def mag(self):
         
-        norm = 0.0
+        mag = 0.0
 
         for i in range(self.dimension):
-            norm = norm + self.vector[i]**2
-        return(math.sqrt(norm))
+            mag = mag + self.vector[i]**2
+        return(math.sqrt(mag))
 
     def norm(self):
         return(self / self.mag())
@@ -86,13 +74,12 @@ class Vector(object):
         
         components = []
         
-        # Temporary fix for cross product not handling signs properly. For three dimensions only!
         components.append(self.vector[1]*other.vector[2]-self.vector[2]*other.vector[1])
         components.append(-(self.vector[0]*other.vector[2]-self.vector[2]*other.vector[0]))
         components.append(self.vector[0]*other.vector[1]-self.vector[1]*other.vector[0])
         
         return(Vector(components))
-        
+    
     # Returns the components of the vector as a list.
     def list(self):
         return(self.vector)
