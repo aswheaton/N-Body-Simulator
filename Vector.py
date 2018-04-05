@@ -2,7 +2,7 @@
     N-dimensional vector class object.
     Author: Alexander S. Wheaton
     Date: 1 April 2018
-    Updated: 1 April 2018
+    Updated: 5 April 2018
 """
 
 import math
@@ -43,7 +43,18 @@ class Vector(object):
             components.append(other * self.vector[i])
         return(Vector(components))
 
+    def __rmul__(self, other):
+        return self.__mul__(other)
+
     def __div__(self, other):
+
+        components = []
+
+        for i in range(self.dimension):
+            components.append(self.vector[i] / other)
+        return(Vector(components))
+
+    def __truediv__(self, other):
 
         components = []
 
@@ -53,11 +64,11 @@ class Vector(object):
 
     def mag(self):
         
-        mag = 0.0
+        sumsqares = 0.0
 
         for i in range(self.dimension):
-            mag = mag + self.vector[i]**2
-        return(math.sqrt(mag))
+            sumsqares = sumsqares + self.vector[i]**2
+        return(math.sqrt(sumsqares))
 
     def norm(self):
         return(self / self.mag())
@@ -81,5 +92,5 @@ class Vector(object):
         return(Vector(components))
     
     # Returns the components of the vector as a list.
-    def list(self):
-        return(self.vector)
+    def __str__(self):
+        return(str(self.vector))
