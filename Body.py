@@ -2,7 +2,7 @@
     Class for a gravitational body in an n-body simulator.
     Author: Alexander S. Wheaton
     Date: 29 January 2018
-    Updated: 2 April 2018
+    Updated: 5 April 2018
 """
 
 from Vector import Vector
@@ -32,7 +32,7 @@ class Body(object):
         
     def beemanPosition(self, timestep):
         
-        nextPosition = self.pos + self.vel * timestep + (1.0/6.0) * ( 4.0 * self.acc - self.accLast ) * timestep ** 2
+        posNext = self.pos + self.vel * timestep + (1.0/6.0) * ( 4.0 * self.acc - self.accLast ) * timestep ** 2
         
     def beemanAcceleration(self, system):
     
@@ -40,8 +40,8 @@ class Body(object):
         
         for n in range(len(system)):
             if system[n].name != self.name:
-                radius = system[n].position - self.position
-                force = G * system[n].mass * self.mass * radius / radius.mag() ** 3
+                radius = system[n].posNext - self.posNext
+                force = Body.G * system[n].mass * self.mass * radius / radius.mag() ** 3
                 netForce = netForce + force
 
         self.accNext = netForce / self.mass
@@ -52,10 +52,10 @@ class Body(object):
 
     def stepForward(self):
         
-        self.posLast = pos
-        self.velLast = vel
-        self.accLast = acc
+        self.posLast = self.pos
+        self.velLast = self.vel
+        self.accLast = self.acc
         
-        self.pos = posNext
-        self.vel = velNext
-        self.acc = accNext
+        self.pos = self.posNext
+        self.vel = self.velNext
+        self.acc = self.accNext
