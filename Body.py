@@ -30,9 +30,12 @@ class Body(object):
         self.velNext = Vector(initialVelocity)
         self.accNext = Vector(initialAcceleration)
         
+        self.timeElapsed = 0
+        self.hasOrbited = False
+        
     def beemanPosition(self, timestep):
         
-        posNext = self.pos + self.vel * timestep + (1.0/6.0) * ( 4.0 * self.acc - self.accLast ) * timestep ** 2
+        self.posNext = self.pos + self.vel * timestep + (1.0/6.0) * ( 4.0 * self.acc - self.accLast ) * timestep ** 2
         
     def beemanAcceleration(self, system):
     
@@ -50,7 +53,7 @@ class Body(object):
         
         self.velNext = self.vel + (1.0/6.0) * (2.0 * self.accNext + 5.0 * self.acc - self.accLast) * timestep
 
-    def stepForward(self):
+    def stepForward(self, timestep):
         
         self.posLast = self.pos
         self.velLast = self.vel
@@ -59,3 +62,27 @@ class Body(object):
         self.pos = self.posNext
         self.vel = self.velNext
         self.acc = self.accNext
+        
+        self.timeElapsed = self.timeElapsed + timestep
+        
+        if ((self.posLast[1] < 0.0) and (self.posNext > 0.0) and (self.hasOrbited == False)):
+            self.period = self.timeElapsed
+            self.hasOrbited = True
+        
+    def getTimeElapsed(self):
+        return(self.timeElapsed)
+        
+    def getKineticEnergy(self):
+        return(0.5 * self.mass * self.vel.mag() ** 2)
+    
+    def getGravitationalEnergy(self, system):
+        
+        potentialEnergy = 0.0
+        
+        for n in range(len(system)):
+            if system[n].name != self.name:
+                potentialEnergy = Body.G * system[n].mass * self.mass / radius.mag()
+        
+        potentialEnergy = potentialEnergy / 2.0
+        
+        return(potentialEnergy)
