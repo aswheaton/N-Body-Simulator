@@ -2,7 +2,7 @@
     N-body simulation class object.
     Author: Alexander S. Wheaton
     Date: 29 March 2018
-    Updated: 5 April 2018
+    Updated: 7 April 2018
 """
 
 import matplotlib.pyplot
@@ -13,8 +13,9 @@ from Body import Body
 
 class Simulation(object):
     
-    # Recieves a datafile and generates a list of Body type objects.
-    def __init__(self, filename, timestep):
+    def __init__(self, filename, timestep, maxIterations):
+        
+        # Recieves a datafile and generates a list of Body type objects.
                 
         self.system = []
         
@@ -24,11 +25,17 @@ class Simulation(object):
             tokens = line.split(", ")
             self.system.append(Body(str(tokens[0]), float(tokens[1]), float(tokens[2]), str(tokens[3]), [float(i) for i in tokens[4].split(",")], [float(i) for i in tokens[5].split(",")], [float(i) for i in tokens[6].split(",")]))
         
-        self.timestep = timestep
-        
         datafile.close()
+        
+        # Sets some initial parameters for the simulation and constants energy and animation methods.
+        
+        self.elapsedTime = 0.0
+        self.timestep = timestep
+        self.maxIterations = maxIterations
 
     def stepForward(self):
+        
+        # Calculates the next position, acceleration, and velocity of each body in the system using the Beeman numerical integration algorithms.
         
         for n in range(len(self.system)):
             self.system[n].beemanPosition(self.timestep)
@@ -37,42 +44,58 @@ class Simulation(object):
         for n in range(len(self.system)):
             self.system[n].beemanVelocity(self.timestep)
 
-        # Updates the position of every body in the system.
+        # Moves every body in the system to its next calculated position.
+        
         for n in range(len(self.system)):
-            self.system[n].stepForward(self.timestep)
+            self.system[n].stepForward(self.timestep, self.timeElapsed)
         
     def exportEnergy(self):
         
-        datafile = open("energy.txt", "w")
+        # Opens the file in write mode on first call, append mode afterwards.
+        
+        if "self.energyFile" in locals():
+            self.energyFile = open("energy.txt", "a")
+        else:
+            self.energyFile = open("energy.txt", "w")
+            def getPeriod(self):
+        return(self.timeElapsed)
+        # Writes the current time, kinetic, potential, and total energies to a file.
         
         totalKineticEnergy = 0.0
         totalPotentialEnergy = 0.0
         
-        for n in range(len(system)):
+        for n in range(len(self.system)):
             totalKineticEnergy = totalKineticEnergy + self.system[n].getKineticEnergy()
             totalPotentialEnergy = totalPotentialEnergy + self.system[n].getGravitationalEnergy(self.system)
             
         totalPotentialEnergy = totalPotentialEnergy / 2.0
         
-        datafile.write(str(elapsedTime) + ", " + str(totalKineticEnergy) + ", " + str(totalPotentialEnergy) + ", " + str(totalKineticEnergy + totalPotentialEnergy) + "\n")
+        self.energyFile.write(str(self.elapsedTime) + ", " + str(totalKineticEnergy) + ", " + str(totalPotentialEnergy) + ", " + str(totalKineticEnergy + totalPotentialEnergy) + "\n")
         
-        datafile.close()
+        self.energyFile.close()
     
-    # This block updates and animates the simulation by calling the stepForward() method and using FuncAnimation.      
-    # Updates the position of each patch with the new simulation data by calling Beeman algorithm functions and stepping the simulation forward.
+    # This block updates and animates the simulation by calling the stepForward() method and using FuncAnimation.
+    
     def animate(self, i):
+        
+        # Steps the simulation forward, increments the time, and exports the energy of the system to a file.
         
         self.stepForward()
         
+        self.elapsedTime = self.elapsedTime + self.timestep
+        self.exportEnergy()
+        
+        # Updates the position of each patch with the new simulation data.
+        
         for n in range(len(self.system)):
             self.patches[n].center = (self.system[n].pos[0], self.system[n].pos[1])
-        return(self.patches)
         
-        self.exportEnergy(self.timestep * i)
+        return(self.patches)
 
     def display(self):
         
         # Creates figure and axes elements. Scales and labels them appropriately.
+        
         figure = matplotlib.pyplot.figure()
         axes = matplotlib.pyplot.axes()
         axes.axis('scaled')
@@ -81,7 +104,8 @@ class Simulation(object):
         axes.set_xlabel('x-coordinate (m)')
         axes.set_ylabel('y-coordinate (m)')
 
-        # Creates a list of circles to be plotted by pyplot.
+        # Creates a list of circles to be plotted by pyplot and adds them to the axes.
+        
         self.patches = []
 
         for n in range(len(self.system)):
@@ -93,7 +117,9 @@ class Simulation(object):
             axes.add_patch(self.patches[n])
         
         # Animates the plot.
-        animation = FuncAnimation(figure, self.animate, frames = 1, repeat = True, interval = 10, blit = True)
+        
+        animation = FuncAnimation(figure, self.animate, frames = self.maxIterations, repeat = False, interval = 20, blit = True)
         
         # Show the plot.
+        
         matplotlib.pyplot.show()
