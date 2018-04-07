@@ -47,7 +47,7 @@ class Simulation(object):
         # Moves every body in the system to its next calculated position.
         
         for n in range(len(self.system)):
-            self.system[n].stepForward(self.timestep, self.timeElapsed)
+            self.system[n].stepForward(self.timestep, self.elapsedTime)
         
     def exportEnergy(self):
         
@@ -57,8 +57,7 @@ class Simulation(object):
             self.energyFile = open("energy.txt", "a")
         else:
             self.energyFile = open("energy.txt", "w")
-            def getPeriod(self):
-        return(self.timeElapsed)
+        
         # Writes the current time, kinetic, potential, and total energies to a file.
         
         totalKineticEnergy = 0.0
@@ -113,6 +112,7 @@ class Simulation(object):
                 self.patches.append(matplotlib.pyplot.Circle((self.system[n].pos[0], self.system[n].pos[1]), 10.0 * self.system[n].radius, color = self.system[n].colour, animated = True))
             else:
                 self.patches.append(matplotlib.pyplot.Circle((self.system[n].pos[0], self.system[n].pos[1]), 1000.0 * self.system[n].radius, color = self.system[n].colour, animated = True))
+        
         for n in range(0, len(self.patches)):
             axes.add_patch(self.patches[n])
         
