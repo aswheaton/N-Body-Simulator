@@ -71,6 +71,7 @@ class Body(object):
         if ((self.posLast[1] < 0.0) and (self.posNext[1] > 0.0) and (self.hasOrbited == False)):
             self.period = timeElapsed
             self.hasOrbited = True
+            print("The period of " + str(self.name) + " is " + str(self.period) + " seconds.")
         
         # Increments the body to the next position and discards the last position. 
         
@@ -100,6 +101,16 @@ class Body(object):
                 potentialEnergy = Body.G * system[n].mass * self.mass / radius.mag()
         
         return(potentialEnergy)
+        
+    def closestApproach(self, system):
+        
+        # Records the distance to Mars for a probe called "Pan".
+           
+        if self.name == "Pan":
+            try:
+                self.distanceToMars.append((system[4].pos - self.pos).mag())    
+            except AttributeError:
+                self.distanceToMars = []
         
     def getPeriod(self):
         
