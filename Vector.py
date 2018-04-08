@@ -88,7 +88,7 @@ class Vector(object):
 
     def norm(self):
         
-        # Calculates and returns a normalised unit vector in the direction of the vector.
+        # Calculates and returns a normalised unit vector parallel to the vector.
         
         return(self / self.mag())
 
