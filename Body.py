@@ -98,7 +98,7 @@ class Body(object):
         for n in range(len(system)):
             if system[n].name != self.name:
                 radius = system[n].posNext - self.posNext
-                potentialEnergy = Body.G * system[n].mass * self.mass / radius.mag()
+                potentialEnergy = potentialEnergy + Body.G * system[n].mass * self.mass / radius.mag()
         
         return(potentialEnergy)
         
