@@ -1,5 +1,3 @@
-# Test comment for pushing to get.
-
 """
     Test code for n-body simulation class object.
     Author: Alexander S. Wheaton
